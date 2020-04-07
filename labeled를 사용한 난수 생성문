@@ -1,0 +1,72 @@
+<script>
+    // min ~ max 사이 정수형 난수 발생 함수 정의
+    function getRandomInt(min, max) {
+        // Math.ceil() 함수는 주어진 숫자보다 크거나 같은 숫자 중 가장 작은 숫자를 integer 로 반환합니다.
+        // Math.floor() 함수는 주어진 숫자와 같거나 작은 정수 중에서 가장 큰 수를 반환합니다.
+        min = Math.ceil(min);  // 인자값 min이(가) window.min에 대입됩니다.
+        max = Math.floor(max); // 인자값 max이(가) window.max에 대입됩니다.
+
+        // random 함수를 통해 반환되는 난수값(실수)을
+        // floor 함수를 거쳐, 정수로 변환하여 return 합니다.
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    // size 개의 min~ max 사이 정수형 난수를 배열과 문자열로 반환합니다.
+    function getRandomIntNums(size, min, max) {
+        let tempArray = [];
+        let tempResult = "";
+
+        // size 수 만큼, 난수를 생성합니다.
+        // 생성한 난수를 tempArray 배열에 저장한 뒤,
+        // tempResult에 문자열 ([i]: x, ...)의 형식으로 대입이 됩니다.
+        for(let i = 0; i <= size; i++) {
+            tempArray[i] = getRandomInt(1, 9);  // 난수값의 범위는 정수 1 ~ 9 사이입니다.
+            tempResult += `[${i}]: ${tempArray[i]}` + (i == size ? "" : " ,");
+        }
+        // 생성된 난수를 저장한 배열 tempArray,
+        // 배열의 인덱스별 데이터를 문자열로 나타낸 tempResult
+        // 배열 형태로 return 합니다.
+        return [tempArray, tempResult];
+    }
+
+
+    let log = console.log;
+
+
+
+    // 발생된 난수 증, 3의 배수를 찾고, 3의 배수중 3번째로 발생 된 값 출력
+    // 만약, 발생 된 난수 중 3의 배수가 3개 미만이면, 난수를 다시 발생.
+    loop1 :
+        while(true) {
+            let loopCount         = 0;
+            let randomNumArray    = [];
+            let randomNumString   = "";
+
+            // 1 ~9 사이 정수 범위, 10개 난수 발생, 중복 허용
+            [randomNumArray, randomNumString] = getRandomIntNums(10, 1, 10);
+
+            // 난수 값 출력
+            log(randomNumString);
+
+            loop2:
+                // randomNumArray에 있는 값을 순회하겠습니다.
+                for(let i of randomNumArray) {
+
+                    // 값이 3의 배수라면 loopCount를 후위증가 시키고,
+                    if(i % 3 == 0) {
+                        loopCount++;
+                        // 3의 배수가 3번 이상 나왔을 때
+                        // 47번 라인의 while문을 탈출하겠으며,
+                        // 3번 미만일 경우 60번 라인의 for문을 통해 계속해서 순회를 진행합니다.
+                        if(loopCount >= 3) {
+                            log(`값 ${i}, 3의 배수, ${loopCount}번째`);
+                            break loop1;
+                        } else
+                            continue loop2;
+                    }
+
+                    log(`값 ${i}, 3의 배수 아님`);
+                }
+
+        }
+</script>
