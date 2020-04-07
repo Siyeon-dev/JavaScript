@@ -1,0 +1,80 @@
+<script>
+    log = console.log;
+
+    // 정수 범위 min ~ max 의 난수를 생성하여 return 합니다.
+    function createRanVal(min, max) {
+        this.min = min;
+        this.max = max;
+
+        return  Math.floor(Math.random() * (this.max - this.min) + this.min);
+    }
+
+    // <!-- size 만큼의 난수를 생성하여 배열에 저장 후, 해당 배열을 return 합니다.
+    function createRanArr(size) {
+        this.size = size;
+        let createdArr = [];
+
+        // size 만큼의 난수를 생성하여, createdArr 배열에 대입합니다.
+        for(let i = 0; i < this.size; i++)
+            createdArr[i] = createRanVal(1, 100);
+
+        // 난수값이 저장된 배열을 return 합니다.
+       return createdArr;
+    }
+    // -->
+
+    // <!-- 배열을 오름차순으로 정렬하는 함수입니다.
+    function sortArray(argArray) {
+        this.arrayList = argArray;
+
+        // 오름차순으로 배열을 정리합니다.
+        for(let i = 0; i < this.arrayList.length; i++) {
+            for(let j = 0; j < this.arrayList.length - i; j++) {
+                if(this.arrayList[j] > this.arrayList[j+1]) {
+                    let tempValue       = this.arrayList[j];
+                    this.arrayList[j]   = this.arrayList[j+1];
+                    this.arrayList[j+1] = tempValue;
+                }
+            }
+        }
+        // 오름차순으로 정렬된 함수를 return합니다.
+        return this.arrayList;
+    }
+    // -->
+
+    // <!-- 정렬된 배열의 최소값, 최고값, 중간값, 평균값을 출력하는 함수입니다.
+     function printValuable(argArray) {
+        let min, max, mid, aver;    // 차례대로 최소값, 최대값, 중간값, 평균값 입니다.
+        let add = 0;                //배열에 담긴 정수의 총합입니다.
+
+        // 배열의 총합을 계산합니다.입 (평균값을 구하기 위한 과정입니다.
+        for(let i = 0; i < argArray.length; i++) {
+            add += argArray[i];
+        }
+
+        // 데이터 대입
+        min     = argArray[0];
+        max     = argArray[argArray.length - 1];
+        mid     = argArray[Math.floor(argArray.length / 2)];
+        aver    = add / argArray.length;
+
+        // 데이터 출력
+        log(`오름차순으로 정렬되었습니다. \n\{ ${argArray} \} 중에서`);
+        log(`   최소값 : ${min}`);
+        log(`   최대값 : ${max}`);
+        log(`   중간값 : ${mid}`);
+        log(`   평균값 : ${aver}`);
+        log(`감사합니다.`);
+    }
+    // -->
+
+    const SIZE_ARRAY = 25;                  // 배열의 크기 (난수의 갯수)
+    let ranArr = createRanArr(SIZE_ARRAY);  // 난수 생성하여 ranArr에 대입
+
+    log(`난수로 인해 생성된 배열입니다. \n\{ ${ranArr} \}`); // 생성된 난수값 출력
+
+    // sortArray함수를 통해 배열을 오름차순으로 정렬하고,
+    // 최소값, 최대값, 중간값, 평균값을 출력한다.
+    printValuable(sortArray(ranArr));
+
+</script>
