@@ -1,0 +1,15 @@
+
+<script>
+    let log = console.log;
+
+    let myArray = [5, 7 ,1 ,10, 5, 11];
+    myArray.sort(
+        function (a, b) {
+            log(a, b);
+            return b -a;
+        }
+    );
+
+    for(let value of myArray)
+        log(value);
+</script>
