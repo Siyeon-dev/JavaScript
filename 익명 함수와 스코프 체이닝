@@ -1,0 +1,24 @@
+<script>
+    var name = 'global';
+
+    function func2(){
+        var name = 'a';
+        console.log('func2' + name);
+        return function(newName){
+            if(newName != undefined){name = newName;}
+            console.log("anonymous" + name);
+        };
+    }
+
+    // 변수에 선언식의 함수를 대입할 때, 해당 함수는 한 번 실행이 된다.
+    // func2()의 return을 잘 살펴보자. 익명 함수를 return하고 있다. 따라서 anony에 저장되어 있는 것은 익명함수이다.
+    var anony = func2(); // func2
+    anony();             // anonymous a
+
+    // 인자값으로 'b'를 넘겨준다.
+    anony('b');          // anonymous b
+
+    // execution context의 관점에서 살펴보면, func2의 name은 죽지않았다.
+    // 따라서 인자값을 따로 넘겨주지 않아도, anonymous b 가 출력된다.
+    anony();             // anonymous b
+</script>
