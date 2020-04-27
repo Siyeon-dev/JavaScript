@@ -1,0 +1,22 @@
+
+    function hello() {
+            return function Inner() {
+                log("what the fuck?");
+             }
+    }
+
+    let test1 = hello;
+    let test2 = hello();
+
+    test1(); // x
+    test2(); // what the fuck?
+    log("=====================");
+
+    log(test1); // hello 함수 전체
+    log(test2); // Inner 함수 전체
+    log("=====================");
+
+    log(test1()); // Inner 함수 전체
+    //+++++++ test2() 함수가 먼저 실행이 되고, 그 다음 log() 에서 test2()함수의 return value를 print 한다. //
+    log(test2()); // undefined
+    log("=====================");
