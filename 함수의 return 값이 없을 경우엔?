@@ -1,0 +1,20 @@
+<script>   
+   function test() {
+        let value1 = 0;
+        let value2 = 1;
+        console.log("function start!");
+    }
+    // 아래와 같은 방식은
+    // 1. 해당 함수를 우선 실행한다 (생성자)
+    // 2. 함수의 return 값을 test1에 대입한다.
+    // 3. 만일 함수에 return 값이 존재하지 않는다면,
+    // undefined를 넘겨준다.
+    let test1 = test();
+    let test2 = test;
+
+    console.log(test1);
+    console.log(test2);
+
+    console.log(typeof test1);
+    console.log(typeof test2);
+</script>
