@@ -1,0 +1,19 @@
+<script>
+  let log = console.log();
+
+  // Function Expression
+  let sum_1 = function (a, b) {
+      let result = a + b;
+      log(result);
+  }
+
+  // Arrow Function
+  let sum_2 = (a, b) => {
+      let result = a + b;
+      log(result);
+  }
+
+  // 매개변수의 괄호마저 생략될 수 있다.
+  let log = msg => console.log(msg);
+</script>
+
