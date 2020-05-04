@@ -1,0 +1,24 @@
+<script>
+    function test(argName, argAge) {
+        this.name = argName;
+        this.age = argAge;
+    }
+
+    let myObj = {sayName : function ()  { console.log(this.name + " : " + this.age)}};
+
+    // test함수의 this를 myObj의 주소값으로 교체한다. 
+    test.apply(myObj, ["siyeon park", 24]);
+
+    myObj.sayName();
+
+    if("name" in myObj)
+        console.log("true");
+    else
+        console.log("false");
+
+    if("age" in myObj)
+        console.log("true");
+    else
+        console.log("false");
+</script>
+
