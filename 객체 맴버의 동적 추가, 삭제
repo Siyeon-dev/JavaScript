@@ -1,0 +1,14 @@
+ <script>
+    function EmptyObject() {}
+
+    let myObj = new EmptyObject();
+    log("name" in myObj);
+
+    // 변수의 set을 통해 새로운 맴버를 생성한다.
+    myObj.name = "siyeon Park";
+    log("name" in myObj);
+
+    // name 맴버 삭제
+    delete myObj.name;
+    log("name" in myObj);
+</script>
