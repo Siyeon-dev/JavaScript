@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {background-color: #f2f2f2;}
+    </style>
+    <script>
+        let stdList = [];   // 학생 객체를 담기 위한 배열
+
+        // <-- YJMember
+        function YJMember(stdId, stdName) {
+            this.id = stdId;
+            this.name = stdName;
+        }
+        YJMember.prototype.getId = function() { return this.id; };
+        YJMember.prototype.getName = function() { return this.name; };
+        YJMember.prototype.setName = function(argName) { this.name = argName; };
+        // -->
+
+        // <-- Student
+        function Student(stdId, stdName) {
+            YJMember.apply(this, [stdId, stdName]);
+            this.courseGrade = [];
+            this.sum = 0;
+            this.avg = 0;
+        }
+        // <-- prototype chain 상속 관계 재설정
+        // YJMember 와 Student 와 연결한다.
+        Student.prototype = Object.create(YJMember.prototype);
+        Student.prototype.constructor = Student;
+        // -->
+
+        // <-- Student.prototype 객체에 method 추가 (sum, avg 에 대한 getter, setter)
+        // 총합 get
+        Student.prototype.getSum = function() {
+            return this.sum;
+        };
+        // 평균 get
+        Student.prototype.getAvg = function() {
+            return this.avg;
+        };
+        // 총합 set
+        Student.prototype.calcSum = function() {
+            for(let i = 0; i < this.courseGrade.length; i++)
+                this.sum += this.courseGrade[i];
+        };
+        // 평균 set
+        Student.prototype.calcAvg = function() {
+            this.avg = this.sum / this.courseGrade.length;
+        };
+        // 학생의 성적을 하나의 배열(courseGrade)에 저장하여 관리한다.
+        Student.prototype.addGrades = function(argJava, argDb, argJapanese) {
+            this.courseGrade[0] = argJava;
+            this.courseGrade[1] = argDb;
+            this.courseGrade[2] = argJapanese;
+        };
+        // -->
+
+        // <-- 학생 객체 생성 및 입력받은 성적 데이터 바인딩
+        function getInputGrade() {
+            // HTML 로부터 입력받은 데이터
+            let stdId = document.getElementById("stdId").value;
+            let stdName = document.getElementById("stdName").value;
+            let gradeJava = parseInt(document.getElementById("gradeJava").value);
+            let gradeDb = parseInt(document.getElementById("gradeDb").value);
+            let gradeJapanese = parseInt(document.getElementById("gradeJapanese").value);
+            // Student 객체 생성 및 성적 데이터 바인딩
+            let newStd = new Student(stdId, stdName);
+            newStd.addGrades(gradeJava, gradeDb, gradeJapanese);
+            newStd.calcSum(); newStd.sum = newStd.getSum();
+            newStd.calcAvg(); newStd.avg = newStd.getAvg();
+            stdList.push(newStd);
+            // Table 에 결과 출력
+            printTable();
+        }
+        // -->
+
+        // <-- 학생 성적 정렬
+        function sortArray(clicked_button) {
+            let tableState = document.getElementById(clicked_button).value;
+            // tableState 저장된 값이 sortUp 이라면, 오름차순
+            // sortDown 이라면, 내림차순
+            stdList.sort(function(a, b) {
+                if (tableState == "sortUp")
+                    return a.getAvg() - b.getAvg();
+                else
+                    return b.getAvg() - a.getAvg();
+            });
+
+            // 정렬된 학생 순서대로 재출력 (기존의 테이블을 삭제하고, 다시 출력한다.)
+            for (let i = 0; i < stdList.length; i++)
+               document.getElementById("myTable").deleteRow(1);
+            for (let i = 0; i < stdList.length; i++)
+                printTable();
+        }
+        // -->
+
+        // <-- 학생 데이터 출력
+        function printTable() {
+            var table = document.getElementById("myTable");
+            var rowLength = document.getElementById("myTable").rows.length;
+
+            var row = table.insertRow(rowLength);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+            var cell5 = row.insertCell(4);
+            var cell6 = row.insertCell(5);
+            var cell7 = row.insertCell(6);
+            var cell8 = row.insertCell(7);
+
+            cell1.innerHTML = rowLength+"";
+            cell2.innerHTML = stdList[rowLength - 1].getName();
+            cell3.innerHTML = stdList[rowLength - 1].id;
+            cell4.innerHTML = stdList[rowLength - 1].courseGrade[0];
+            cell5.innerHTML = stdList[rowLength - 1].courseGrade[1];
+            cell6.innerHTML = stdList[rowLength - 1].courseGrade[2];
+            cell7.innerHTML = stdList[rowLength - 1].getSum();
+            cell8.innerHTML = stdList[rowLength - 1].getAvg().toFixed(2);
+        }
+        // -->
+    </script>
+</head>
+<body>
+<form action="">
+    <fieldset>
+        <label for="stdName">이름 : </label>
+        <input id="stdName" type="text" name="stdName">
+        <label for="stdId">학번 : </label>
+        <input id="stdId"type="text" name="stdId">
+        <label for="gradeJava">JAVA : </label>
+        <input id="gradeJava"type="text"  name="gradeJava">
+        <label for="gradeDb">DB : </label>
+        <input id="gradeDb"type="text" name="gradeDb">
+        <label for="gradeJapanese">Japanese : </label>
+        <input id="gradeJapanese"type="text" name="gradeJapanese">
+
+        <button type="button" onclick="getInputGrade()">성적입력</button>
+        <button type="button" id="sortUp"  value="sortUp" onclick="sortArray(this.id)">정렬(오름)</button>
+        <button type="button" id="sortDown" value="sortDown" onclick="sortArray(this.id)">정렬(내림</button>
+    </fieldset>
+
+    <table id="myTable">
+        <tr>
+            <td>순번</td>
+            <td>학번</td>
+            <td>이름</td>
+            <td>JAVA</td>
+            <td>DB</td>
+            <td>JAPANESE</td>
+            <td>총점</td>
+            <td>평균</td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>
