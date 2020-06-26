@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        fieldset {
+            background-color: #eeeeee;
+        }
+
+        legend {
+            background-color: gray;
+            color: white;
+            padding: 5px 10px;
+        }
+        input {
+            margin: 5px;
+            size: 2px;
+            text-align: center;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            text-align: center;
+            padding: 8px;
+        }
+        tr:nth-child(even) {background-color: #f2f2f2;}
+    </style>
+</head>
+<body>
+<fieldset style="width:1000px">
+    이름 : <input style="width:70px" type="text"  id="stdName" size="3" value="박시연">
+    학번 : <input style="width:70px" type="text"  id="stdId" size="4" value="1601111">
+    JAVA : <input style="width:70px" type="text"  id="courseJava" size="1" value="100">
+    DB : <input style="width:70px" type="text"  id="courseDb" size="1" value="100">
+    일본어 : <input style="width:70px" type="text"  id="courseJapanese" size="1" value="100">
+    <input type="button" name="add" value="성적입력" onclick="btn_process(this.name)">
+    <input type="button" name="sortAscend" value="정렬(오름)" onclick="btn_process(this.name)">
+    <input type="button" name="sortDescend" value="정렬(내림)" onclick="btn_process(this.name)">
+</fieldset>
+<table id="myTable" style="width:850px">
+    <thead id ="myTable_row_1">
+        <th>순번</th>
+        <th>학번</th>
+        <th>이름</th>
+        <th>JAVA</th>
+        <th>DB</th>
+        <th>일본어</th>
+        <th>총점</th>
+        <th>평균</th>
+    </thead>
+    <tbody id="myTable_body">
+    </tbody>
+</table>
+</body>
+<script>
+    let log = console.log;
+
+
+    // YJMember 클래스 정의
+    function YJMember(argId, argName) {
+        this.id   = argId;       // 학번, 사번
+        this.name = YJMember.prototype.setName(argName);  // 이름
+    }
+
+    // <<-- YJMember 프로토타입 메서드 정의
+    YJMember.prototype.getId = function() { return this.id; }
+    YJMember.prototype.getName = function() { return this.name; }
+    YJMember.prototype.setName = function(argName) { return this.name = argName; }
+    // -->>
+
+    // Student 클래스 정의
+    function Student(argId, argName) {
+        YJMember.apply(this, [argId, argName]);
+        this.courseGrade =[];
+        this.sum = 0;
+        this.avg  = 0;
+    }
+
+    // <<-- Student -> YJMember 프로토타입 체이닝 설정
+    Student.prototype = Object.create(YJMember.prototype);
+    Student.prototype.constructor = Student;
+    // -->>
+
+    // <<-- Student 프로토타입 메서드 정의
+    Student.prototype.getSum = function () { return this.sum; };
+    Student.prototype.getAvg = function () { return this.avg; };
+    Student.prototype.calcSum = function () {
+        this.sum = 0;
+        for(let value of this.courseGrade)
+            this.sum += value;
+        return this.sum;
+    };
+    Student.prototype.calcAvg = function () {
+        this.avg = this.calcSum()/this.courseGrade.length;
+        return this.avg;
+    };
+    Student.prototype.addGrades = function(argJava, argDb, argJapanes) {
+        for(let i = 0 ; i < arguments.length ; i++)
+            this.courseGrade[i] = arguments[i];
+        // 총점, 평균 계산
+        this.calcAvg();
+    };
+    // -->>
+
+
+    /////////////////////////////////////////////////////////////////////
+    // <<-- 성적 계산기 환경 설정
+    let confData = (function confFunc () {
+        var myConfig = {
+            get numOfCourses() {return this.inputNamesCourseTitles.length;} ,
+            inputNamesCourseTitles : ["courseJava", "courseDb", "courseJapanese"],
+            inputNameStdName : "stdName",
+            inputNameStdId : "stdId",
+            tableName : "myTable"
+        };
+
+        Object.freeze(myConfig.inputNamesCourseTitles)
+        Object.freeze(myConfig);
+
+        return myConfig;
+    })(); // -->> 성적 계산기 환경 설정
+    /////////////////////////////////////////////////////////////////////
+
+
+    ////////////////////////////////////////////////
+    // <<-- 사용자 입력 정보를 기반으로 Student 객체 생성
+    function insertStdGrade() {
+        //  <<-- Input element 로 부터 이름, 학번, 성적 얻어오기
+        let stdName        = document.getElementById(confData.inputNameStdName).value;
+        let stdId          = document.getElementById(confData.inputNameStdId).value;
+
+        let score = [];
+        for(let i = 0 ; i < confData.numOfCourses ; i++) {
+            score[i] = parseInt(document.getElementById(confData.inputNamesCourseTitles[i]).value);
+        }
+        // -->> end input element
+
+        // Student 객체 생성 후 이름, 학번, 성적 데이터 삽입
+        // 생성 객체 List 내 추가, List 전역 변수
+        let newStd = new Student(stdId, stdName);
+        newStd.addGrades(...score);
+
+        return newStd;  // 생성된 학생 객체 반환
+    } // -->> 사용자 입력 정보를 기반으로 Student 객체 생성
+    ////////////////////////////////////////////////
+
+
+    ///////////////////////////////////////////////////////
+    // <<-- 버튼 이벤트 처리 : 성적입력, 정렬(오름), 정렬(내림)
+    function btn_process(argBtnType) {
+        let selectedQuery;  // User 로부터 선택받은 상태 저장 변수
+        let studentObj;     // add 되었을 때, 생성된 학생 객체를 전달받을 변수
+
+        switch(argBtnType) {
+            case "add":
+                studentObj = insertStdGrade();
+                selectedQuery = 'insert';
+                break;
+            case "sortAscend":
+                selectedQuery = 'ascend';
+                break;
+            case "sortDescend":
+                selectedQuery = 'descend';
+                break;
+        }
+        deleteTableRow();  // 기존의 Table 삭제 함수
+        // Ajax XMLHTTP 함수 호출
+        sendAjaxRequest(studentObj, selectedQuery);
+    } // -->> 버튼 이벤트 처리 : 성적입력, 정렬(오름), 정렬(내림)
+    ///////////////////////////////////////////////////////
+
+
+    ////////////////////////////////////////////////
+    // * argStudent : 생성된 학생 객체
+    // * selectedQuery : DB에 검색할 쿼리 방식
+    // <<-- Ajax 통신을 위한 function
+    function sendAjaxRequest(argStudent, selectedQuery) {
+        var ajaxHttpReq = new XMLHttpRequest();
+
+        // Response 를 받았을 때, 어떻게 처리할 것인지
+        ajaxHttpReq.onreadystatechange = function () {
+            if (ajaxHttpReq.readyState == 4 && ajaxHttpReq.status == 200) {
+                let decodedJson = JSON.parse(ajaxHttpReq.responseText);
+
+                prtStdDataFromServer(decodedJson);  // DB Query 결과 출력 함수
+            }
+        }
+
+        // POST 타입으로 전송.
+        ajaxHttpReq.open("POST", "ajax_process.php", false);
+        ajaxHttpReq.setRequestHeader("Content-type", "application/json");
+        ajaxHttpReq.send(JSON.stringify([argStudent, selectedQuery]));
+    } // -->> Ajax 통신을 위한 function
+    ////////////////////////////////////////////////
+
+
+    ///////////////////////////////////////////////////////
+    // <>-- Server 로부터 받아온, Data를 Table 에 출력시키는 함수
+    function prtStdDataFromServer(decodedJson) {
+        var myTableBody = document.getElementById('myTable_body');
+        let count = 1;  // 출력 순서를 나타내기 위한 변수
+
+        // Table 의 row 에 접근하는 반복문 입니다.
+        for(let i = 0; i < decodedJson[0].length; i++) {
+            var row = myTableBody.insertRow(i);
+            var cell = row.insertCell(0);
+            cell.innerHTML = count++;
+
+            // row 의 각 cell 에 접근하는 반복문 입니다.
+            for(let j = 0; j < decodedJson[0][i].length; j++) {
+                var cell = row.insertCell(j + 1);
+                    cell.innerHTML = decodedJson[0][i][j];
+            }
+
+            // cel = row.insertCell(decodedJson[0][i].length + 1)
+            // cel.document.createElement('BUTTON');
+
+        }
+    } // -->> Server 로부터 받아온, Data를 Table 에 출력시키는 함수
+    ///////////////////////////////////////////////////////
+
+
+    ///////////////////////////////////////////////////////
+    // <<-- 새로운 테이블 정렬을 출력하기 위해 기존의 테이블을 지우는 함수
+    function deleteTableRow() {
+        var myTableBody = document.getElementById('myTable');
+        while(myTableBody.rows.length > 1) {
+            myTableBody.deleteRow(1);
+        }
+    } // -->> 새로운 테이블 정렬을 출력하기 위해 기존의 테이블을 지우는 함수
+    ///////////////////////////////////////////////////////
+</script>
+</html>
